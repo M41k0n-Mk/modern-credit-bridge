@@ -50,10 +50,12 @@ class PropostaTest {
     @Test
     @DisplayName("Deve lançar exceção quando CPF é nulo")
     void deveLancarExcecaoQuandoCpfNulo() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
+        // Act
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> {
             new Proposta(null, new BigDecimal("1000.00"));
         });
+        // Assert
+        assertEquals("CPF não pode ser nulo", ex.getMessage());
     }
 
     @Test
@@ -77,10 +79,12 @@ class PropostaTest {
     @Test
     @DisplayName("Deve lançar exceção quando Valor é nulo")
     void deveLancarExcecaoQuandoValorNulo() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
+        // Act
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> {
             new Proposta("12345678900", null);
         });
+        // Assert
+        assertEquals("Valor não pode ser nulo", ex.getMessage());
     }
 
     @Test

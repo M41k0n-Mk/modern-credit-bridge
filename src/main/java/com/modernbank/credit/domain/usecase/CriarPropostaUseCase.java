@@ -31,8 +31,14 @@ public class CriarPropostaUseCase {
      * @throws IllegalArgumentException se repository for nulo
      */
     public CriarPropostaUseCase(PropostaRepository repository, ClienteHistoricoService clienteHistoricoService) {
-        this.repository = Objects.requireNonNull(repository, "Repository não pode ser nulo");
-        this.clienteHistoricoService = Objects.requireNonNull(clienteHistoricoService, "ClienteHistoricoService não pode ser nulo");
+        if (repository == null) {
+            throw new IllegalArgumentException("Repository não pode ser nulo");
+        }
+        if (clienteHistoricoService == null) {
+            throw new IllegalArgumentException("ClienteHistoricoService não pode ser nulo");
+        }
+        this.repository = repository;
+        this.clienteHistoricoService = clienteHistoricoService;
     }
 
     /**
@@ -48,7 +54,9 @@ public class CriarPropostaUseCase {
      * @throws IllegalArgumentException se proposta for inválida
      */
     public Proposta executar(Proposta proposta) {
-        Objects.requireNonNull(proposta, "Proposta não pode ser nula");
+        if (proposta == null) {
+            throw new IllegalArgumentException("Proposta não pode ser nula");
+        }
 
         // 1) Consulta histórico/risco do cliente (ex.: Mainframe/Neptune)
         RiscoCliente risco = clienteHistoricoService.avaliarRisco(proposta.getCpf(), proposta.getValor());

@@ -57,8 +57,7 @@ class CriarPropostaUseCaseTest {
         Proposta propostaEntrada = new Proposta(cpf, valor);
         Proposta propostaSalva = new Proposta(idGerado, cpf, valor, "PENDENTE");
 
-        when(clienteHistoricoService.avaliarRisco(any(), any()))
-                .thenReturn(RiscoCliente.BAIXO);
+        when(clienteHistoricoService.avaliarRisco(any(), any())).thenReturn(RiscoCliente.BAIXO);
         when(repositoryMock.salvar(any(Proposta.class)))
                 .thenReturn(propostaSalva);
 
@@ -127,8 +126,7 @@ class CriarPropostaUseCaseTest {
         Proposta proposta = new Proposta("12345678900", new BigDecimal("1000.00"));
         Proposta propostaSalva = new Proposta(UUID.randomUUID(), proposta.getCpf(), proposta.getValor(), "PENDENTE");
 
-        when(clienteHistoricoService.avaliarRisco(any(), any()))
-                .thenReturn(RiscoCliente.BAIXO);
+        when(clienteHistoricoService.avaliarRisco(any(), any())).thenReturn(RiscoCliente.BAIXO);
         when(repositoryMock.salvar(any(Proposta.class)))
                 .thenReturn(propostaSalva);
 

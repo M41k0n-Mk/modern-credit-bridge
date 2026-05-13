@@ -1,10 +1,11 @@
-package com.modernbank.credit.infrastructure.input.rest;
+package com.infrastructure.input.rest;
 
 import com.modernbank.credit.domain.model.Proposta;
 import com.modernbank.credit.domain.usecase.CriarPropostaUseCase;
 import com.modernbank.credit.infrastructure.input.rest.dto.PropostaRequest;
 import com.modernbank.credit.infrastructure.input.rest.dto.PropostaResponse;
 import com.modernbank.credit.infrastructure.input.rest.mapper.PropostaMapper;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,7 +41,7 @@ public class PropostaController {
      * @return ResponseEntity com os dados da proposta criada
      */
     @PostMapping
-    public ResponseEntity<PropostaResponse> criar(@RequestBody PropostaRequest request) {
+    public ResponseEntity<PropostaResponse> criar(@Valid @RequestBody PropostaRequest request) {
         // 1. Converte Request (DTO) para Domínio
         Proposta propostaDomain = PropostaMapper.toDomain(request);
 

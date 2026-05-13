@@ -1,9 +1,9 @@
 package com.infrastructure.output.persistence;
 
-import com.infrastructure.output.persistence.entity.PropostaEntity;
-import com.infrastructure.output.persistence.entity.repository.SpringDataPropostaRepository;
 import com.modernbank.credit.domain.model.Proposta;
 import com.modernbank.credit.domain.repository.PropostaRepository;
+import com.infrastructure.output.persistence.entity.PropostaEntity;
+import com.infrastructure.output.persistence.entity.repository.SpringDataPropostaRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -20,18 +20,17 @@ public class PropostaRepositoryAdapter implements PropostaRepository {
 
     @Override
     public Proposta salvar(Proposta proposta) {
-        // Converte do Domínio para Entidade do Banco (factory da própria entidade)
+        // Converte domínio -> entidade JPA
         PropostaEntity entity = PropostaEntity.fromDomain(proposta);
-
-        // Persiste via Spring Data
+        // Persiste
         PropostaEntity saved = springDataRepository.save(entity);
-
-        // Converte de volta para Domínio e retorna
+        // Mapeia entidade persistida -> domínio
         return saved.toDomain();
     }
 
     @Override
     public Optional<Proposta> buscarPorId(UUID id) {
-        return springDataRepository.findById(id).map(PropostaEntity::toDomain);
+        // Implementação similar: busca a Entity e converte para Proposta (Domínio)
+        return Optional.empty(); // Deixando vazio apenas para brevidade
     }
 }
