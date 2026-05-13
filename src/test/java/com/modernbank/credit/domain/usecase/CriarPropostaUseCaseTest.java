@@ -2,6 +2,8 @@ package com.modernbank.credit.domain.usecase;
 
 import com.modernbank.credit.domain.model.Proposta;
 import com.modernbank.credit.domain.repository.PropostaRepository;
+import com.modernbank.credit.domain.service.ClienteHistoricoService;
+import com.modernbank.credit.domain.service.RiscoCliente;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,11 +36,14 @@ class CriarPropostaUseCaseTest {
     @Mock
     private PropostaRepository repositoryMock;
 
+    @Mock
+    private ClienteHistoricoService clienteHistoricoService;
+
     private CriarPropostaUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        this.useCase = new CriarPropostaUseCase(repositoryMock);
+        this.useCase = new CriarPropostaUseCase(repositoryMock, clienteHistoricoService);
     }
 
     @Test
@@ -52,6 +57,8 @@ class CriarPropostaUseCaseTest {
         Proposta propostaEntrada = new Proposta(cpf, valor);
         Proposta propostaSalva = new Proposta(idGerado, cpf, valor, "PENDENTE");
 
+        when(clienteHistoricoService.avaliarRisco(any(), any()))
+                .thenReturn(RiscoCliente.BAIXO);
         when(repositoryMock.salvar(any(Proposta.class)))
                 .thenReturn(propostaSalva);
 
@@ -83,7 +90,15 @@ class CriarPropostaUseCaseTest {
     void deveLancarExcecaoQuandoRepositorioNulo() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            new CriarPropostaUseCase(null);
+            new CriarPropostaUseCase(null, clienteHistoricoService);
+        });
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção quando ClienteHistoricoService é nulo")
+    void deveLancarExcecaoQuandoClienteHistoricoServiceNulo() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new CriarPropostaUseCase(repositoryMock, null);
         });
     }
 
@@ -112,6 +127,8 @@ class CriarPropostaUseCaseTest {
         Proposta proposta = new Proposta("12345678900", new BigDecimal("1000.00"));
         Proposta propostaSalva = new Proposta(UUID.randomUUID(), proposta.getCpf(), proposta.getValor(), "PENDENTE");
 
+        when(clienteHistoricoService.avaliarRisco(any(), any()))
+                .thenReturn(RiscoCliente.BAIXO);
         when(repositoryMock.salvar(any(Proposta.class)))
                 .thenReturn(propostaSalva);
 
