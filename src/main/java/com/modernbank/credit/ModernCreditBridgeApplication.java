@@ -11,8 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * - com.modernbank.credit.* (todas as camadas)
  * - Componentes @Component, @Service, @Repository, @Controller
  * - Beans configurados com @Configuration
- * 
- * @author ModernBank
+ *
  */
 @SpringBootApplication
 public class ModernCreditBridgeApplication {

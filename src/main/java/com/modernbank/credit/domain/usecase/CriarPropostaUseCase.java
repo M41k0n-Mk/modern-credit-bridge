@@ -16,8 +16,7 @@ import java.util.Objects;
  * 1. Validação (delega ao entity se for simples)
  * 2. Coordenação entre agregados/services
  * 3. Persistência dos dados
- * 
- * @author ModernBank
+ *
  */
 public class CriarPropostaUseCase {
 

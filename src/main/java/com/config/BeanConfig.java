@@ -1,4 +1,4 @@
-package com.modernbank.credit.config;
+package com.config;
 
 import com.modernbank.credit.domain.repository.PropostaRepository;
 import com.modernbank.credit.domain.usecase.CriarPropostaUseCase;

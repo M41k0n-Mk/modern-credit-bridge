@@ -7,8 +7,7 @@ package com.modernbank.credit.domain.exception;
  * - Busca por ID que não existe
  * - Operações em propostas que foram deletadas
  * - Tentativa de atualizar proposta inexistente
- * 
- * @author ModernBank
+ *
  */
 public class PropostaNotFoundException extends DomainException {
 

@@ -19,8 +19,7 @@ import java.util.UUID;
  * 
  * Esta interface é interna (não deve ser usada fora de infrastruct)
  * A interface PropostaRepository (domínio) é o contrato público.
- * 
- * @author ModernBank
+ *
  */
 @Repository
 public interface PropostaRepositoryJpa extends JpaRepository<PropostaEntity, UUID> {

@@ -1,8 +1,9 @@
-package com.modernbank.credit.infrastructure.input.rest.mapper;
+package com.infrastructure.input.rest.mapper;
 
+import com.infrastructure.input.rest.dto.PropostaRequest;
+import com.infrastructure.input.rest.dto.PropostaResponse;
 import com.modernbank.credit.domain.model.Proposta;
-import com.modernbank.credit.infrastructure.input.rest.dto.PropostaRequest;
-import com.modernbank.credit.infrastructure.input.rest.dto.PropostaResponse;
+
 
 /**
  * Mapper responsável pela conversão entre objetos de DTO e Domínio.

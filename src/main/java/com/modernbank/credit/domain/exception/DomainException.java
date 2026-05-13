@@ -8,8 +8,7 @@ package com.modernbank.credit.domain.exception;
  * - Facilita captura genérica de exceções de domínio
  * - Diferencia erros de domínio de outros tipos de erro
  * - Permite tratamento específico de erros de negócio
- * 
- * @author ModernBank
+ *
  */
 public class DomainException extends RuntimeException {
 

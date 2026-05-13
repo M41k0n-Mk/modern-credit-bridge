@@ -7,8 +7,7 @@ package com.modernbank.credit.domain.exception;
  * - CPF inválido ou vazio
  * - Valor de proposta inválido ou <= 0
  * - Regras de negócio violadas
- * 
- * @author ModernBank
+ *
  */
 public class PropostaInvalidaException extends DomainException {
 
