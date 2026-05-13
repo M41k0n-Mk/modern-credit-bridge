@@ -118,12 +118,6 @@ mvn test
 
 ---
 
-## 📚 Documentação
-
-- [REFACTORING_REPORT.md](REFACTORING_REPORT.md) - Detalhes da refatoração inicial
-- [IMPLEMENTATION_REPORT.md](IMPLEMENTATION_REPORT.md) - Documentação das implementações
-
----
 
 ## 📝 Versão
 

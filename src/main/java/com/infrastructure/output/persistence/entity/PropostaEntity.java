@@ -1,4 +1,4 @@
-package com.modernbank.credit.infrastructure.persistence;
+package com.infrastructure.output.persistence.entity;
 
 import com.modernbank.credit.domain.model.Proposta;
 import jakarta.persistence.Column;
@@ -26,8 +26,7 @@ import java.util.UUID;
  * - @AllArgsConstructor: Construtor com todos os campos
  * - @NoArgsConstructor: Construtor padrão (necessário para JPA)
  * - @Getter/@Setter: Getters e setters automáticos
- * 
- * @author ModernBank
+ *
  */
 @Entity
 @Table(name = "propostas")

@@ -2,6 +2,7 @@ package com.modernbank.credit.config;
 
 import com.modernbank.credit.domain.repository.PropostaRepository;
 import com.modernbank.credit.domain.usecase.CriarPropostaUseCase;
+import com.modernbank.credit.domain.service.ClienteHistoricoService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,7 +21,8 @@ public class BeanConfig {
      * @return instância do use case configurada
      */
     @Bean
-    public CriarPropostaUseCase criarPropostaUseCase(PropostaRepository repository) {
-        return new CriarPropostaUseCase(repository);
+    public CriarPropostaUseCase criarPropostaUseCase(PropostaRepository repository,
+                                                    ClienteHistoricoService clienteHistoricoService) {
+        return new CriarPropostaUseCase(repository, clienteHistoricoService);
     }
 }
