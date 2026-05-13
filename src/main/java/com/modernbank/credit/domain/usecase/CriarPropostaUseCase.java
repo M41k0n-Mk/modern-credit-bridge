@@ -20,6 +20,7 @@ import java.util.Objects;
  * @author ModernBank
  */
 public class CriarPropostaUseCase {
+
     private final PropostaRepository repository;
     private final ClienteHistoricoService clienteHistoricoService;
 
