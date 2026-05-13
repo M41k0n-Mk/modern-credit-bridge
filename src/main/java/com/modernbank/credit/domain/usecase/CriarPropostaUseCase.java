@@ -2,6 +2,9 @@ package com.modernbank.credit.domain.usecase;
 
 import com.modernbank.credit.domain.model.Proposta;
 import com.modernbank.credit.domain.repository.PropostaRepository;
+import com.modernbank.credit.domain.service.ClienteHistoricoService;
+import com.modernbank.credit.domain.service.RiscoCliente;
+import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
@@ -18,6 +21,7 @@ import java.util.Objects;
  */
 public class CriarPropostaUseCase {
     private final PropostaRepository repository;
+    private final ClienteHistoricoService clienteHistoricoService;
 
     /**
      * Construtor com injeção de dependência.
@@ -25,8 +29,9 @@ public class CriarPropostaUseCase {
      * @param repository repositório de propostas (não nulo)
      * @throws IllegalArgumentException se repository for nulo
      */
-    public CriarPropostaUseCase(PropostaRepository repository) {
+    public CriarPropostaUseCase(PropostaRepository repository, ClienteHistoricoService clienteHistoricoService) {
         this.repository = Objects.requireNonNull(repository, "Repository não pode ser nulo");
+        this.clienteHistoricoService = Objects.requireNonNull(clienteHistoricoService, "ClienteHistoricoService não pode ser nulo");
     }
 
     /**
@@ -43,10 +48,32 @@ public class CriarPropostaUseCase {
      */
     public Proposta executar(Proposta proposta) {
         Objects.requireNonNull(proposta, "Proposta não pode ser nula");
-        
-        // Aqui poderiam estar validações e regras de negócio mais complexas
-        // Ex: chamar um DomainService, validar regras de crédito, etc.
-        
-        return repository.salvar(proposta);
+
+        // 1) Consulta histórico/risco do cliente (ex.: Mainframe/Neptune)
+        RiscoCliente risco = clienteHistoricoService.avaliarRisco(proposta.getCpf(), proposta.getValor());
+
+        // 2) Define status inicial conforme risco
+        String status;
+        switch (risco) {
+            case ALTO:
+                status = "REJEITADA"; // prevenção de fraude/crédito
+                break;
+            case MEDIO:
+                status = "PENDENTE_REVISAO"; // fila de análise manual
+                break;
+            default:
+                status = "PENDENTE"; // fluxo normal
+        }
+
+        // 3) Recria a proposta com o status calculado (entidade imutável)
+        Proposta propostaParaSalvar = new Proposta(
+                proposta.getId(),
+                proposta.getCpf(),
+                proposta.getValor(),
+                status
+        );
+
+        // 4) Persiste
+        return repository.salvar(propostaParaSalvar);
     }
 }
