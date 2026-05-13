@@ -1,4 +1,4 @@
-package com.modernbank.credit.infrastructure.input.rest.mapper;
+package com.infrastructure.input.rest.mapper;
 
 import com.modernbank.credit.domain.model.Proposta;
 import com.modernbank.credit.infrastructure.input.rest.dto.PropostaRequest;
@@ -29,7 +29,10 @@ public interface PropostaMapperInterface {
      * @param request dados de entrada da API (não nulo)
      * @return entidade Proposta do domínio
      */
-    Proposta toDomain(PropostaRequest request);
+    default Proposta toDomain(PropostaRequest request) {
+        if (request == null) return null;
+        return new Proposta(request.getCpf(), request.getValor());
+    }
 
     /**
      * Converte uma entidade de domínio para um DTO de resposta.
@@ -37,5 +40,8 @@ public interface PropostaMapperInterface {
      * @param proposta entidade de domínio (não nula)
      * @return DTO com os dados para retorno da API
      */
-    PropostaResponse toResponse(Proposta proposta);
+    default PropostaResponse toResponse(Proposta proposta) {
+        if (proposta == null) return null;
+        return new PropostaResponse(proposta.getId(), proposta.getStatus());
+    }
 }

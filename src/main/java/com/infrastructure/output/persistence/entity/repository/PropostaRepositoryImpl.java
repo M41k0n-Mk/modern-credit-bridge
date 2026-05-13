@@ -1,8 +1,9 @@
-package com.modernbank.credit.infrastructure.persistence;
+package com.infrastructure.output.persistence.entity.repository;
 
 import com.modernbank.credit.domain.model.Proposta;
 import com.modernbank.credit.domain.exception.PropostaNotFoundException;
 import com.modernbank.credit.domain.repository.PropostaRepository;
+import com.infrastructure.output.persistence.entity.PropostaEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
