@@ -1,6 +1,6 @@
 package com.infrastructure.output.persistence.entity.repository;
 
-import com.modernbank.credit.infrastructure.output.persistence.entity.PropostaEntity;
+import com.infrastructure.output.persistence.entity.PropostaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

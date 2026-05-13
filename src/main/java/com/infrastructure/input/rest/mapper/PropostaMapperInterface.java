@@ -9,16 +9,15 @@ import org.mapstruct.factory.Mappers;
 /**
  * Mapper com MapStruct para conversão entre DTOs e Entidades de Domínio.
  * MapStruct automatiza a geração de código de conversão em tempo de compilação.
- * 
+ *
  * Benefícios:
  * - Performance: Conversão feita em compile-time (sem reflexão)
  * - Type-safe: Verificação de tipos em tempo de compilação
  * - Menos boilerplate: Não precisa escrever getters/setters manualmente
  * - Facilmente extensível: Dapat adicionar custom mappings
- * 
- * @author ModernBank
+ *
  */
-@Mapper(componentModel = "spring")
+/*@Mapper(componentModel = "spring")
 public interface PropostaMapperInterface {
 
     PropostaMapperInterface INSTANCE = Mappers.getMapper(PropostaMapperInterface.class);
@@ -28,7 +27,7 @@ public interface PropostaMapperInterface {
      *
      * @param request dados de entrada da API (não nulo)
      * @return entidade Proposta do domínio
-     */
+
     Proposta toDomain(PropostaRequest request);
 
     /**
@@ -36,6 +35,7 @@ public interface PropostaMapperInterface {
      *
      * @param proposta entidade de domínio (não nula)
      * @return DTO com os dados para retorno da API
-     */
+
     PropostaResponse toResponse(Proposta proposta);
 }
+*/
