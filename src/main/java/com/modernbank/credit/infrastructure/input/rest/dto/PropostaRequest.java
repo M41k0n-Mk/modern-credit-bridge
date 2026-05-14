@@ -1,4 +1,4 @@
-package com.infrastructure.input.rest.dto;
+package com.modernbank.credit.infrastructure.input.rest.dto;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;

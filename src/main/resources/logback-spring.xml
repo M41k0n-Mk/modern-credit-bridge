@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <!-- Permite ler propriedades do Spring/Application -->
+    <springProperty scope="context" name="appName" source="spring.application.name" defaultValue="modern-credit-bridge"/>
+    <springProperty scope="context" name="appLogLevel" source="APP_LOG_LEVEL" defaultValue="INFO"/>
+
+    <!-- Layout padrão (texto) para DEV -->
+    <property name="DEV_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %cyan(%logger{36}) - %msg %n%ex{full}"/>
+
+    <!-- Appender Console (DEV) -->
+    <appender name="DEV_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${DEV_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender Console JSON (PROD) -->
+    <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"app":"${appName}"}</customFields>
+        </encoder>
+    </appender>
+
+    <!-- Rolling File (PROD) -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/${appName}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/${appName}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>50MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"app":"${appName}"}</customFields>
+        </encoder>
+    </appender>
+
+    <!-- Perfis: DEV usa console texto, PROD usa JSON + FILE -->
+    <springProfile name="dev">
+        <root level="INFO">
+            <appender-ref ref="DEV_CONSOLE"/>
+        </root>
+        <logger name="com.modernbank.credit" level="DEBUG"/>
+        <logger name="org.springframework" level="WARN"/>
+        <logger name="org.hibernate.SQL" level="WARN"/>
+    </springProfile>
+
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="JSON_CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </root>
+        <!-- Nível da app controlável por env var APP_LOG_LEVEL (default INFO) -->
+        <logger name="com.modernbank.credit" level="${appLogLevel}"/>
+        <logger name="org.springframework" level="WARN"/>
+        <logger name="org.hibernate.SQL" level="WARN"/>
+    </springProfile>
+
+    <!-- Perfil opcional para aumentar verbosidade em qualquer ambiente: use o profile 'verbose' -->
+    <springProfile name="verbose">
+        <logger name="com.modernbank.credit" level="DEBUG"/>
+    </springProfile>
+
+</configuration>

@@ -1,4 +1,4 @@
-package com.modernbank.credit.infrastructure.output.mainframe;
+package com.modernbank.credit.infrastructure.output.persistence;
 
 import com.modernbank.credit.domain.service.ClienteHistoricoService;
 import com.modernbank.credit.domain.service.RiscoCliente;

@@ -4,6 +4,10 @@ import com.modernbank.credit.domain.model.Proposta;
 import com.modernbank.credit.domain.repository.PropostaRepository;
 import com.modernbank.credit.domain.service.ClienteHistoricoService;
 import com.modernbank.credit.domain.service.RiscoCliente;
+import com.modernbank.credit.domain.sqs.PropostaNotifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -22,6 +26,8 @@ public class CriarPropostaUseCase {
 
     private final PropostaRepository repository;
     private final ClienteHistoricoService clienteHistoricoService;
+    private final PropostaNotifier propostaNotifier;
+    private static final Logger log = LoggerFactory.getLogger(CriarPropostaUseCase.class);
 
     /**
      * Construtor com injeção de dependência.
@@ -29,7 +35,8 @@ public class CriarPropostaUseCase {
      * @param repository repositório de propostas (não nulo)
      * @throws IllegalArgumentException se repository for nulo
      */
-    public CriarPropostaUseCase(PropostaRepository repository, ClienteHistoricoService clienteHistoricoService) {
+    public CriarPropostaUseCase(PropostaRepository repository, ClienteHistoricoService clienteHistoricoService,
+                                PropostaNotifier propostaNotifier) {
         if (repository == null) {
             throw new IllegalArgumentException("Repository não pode ser nulo");
         }
@@ -38,6 +45,7 @@ public class CriarPropostaUseCase {
         }
         this.repository = repository;
         this.clienteHistoricoService = clienteHistoricoService;
+        this.propostaNotifier = propostaNotifier;
     }
 
     /**
@@ -59,6 +67,13 @@ public class CriarPropostaUseCase {
 
         // 1) Consulta histórico/risco do cliente (ex.: Mainframe/Neptune)
         RiscoCliente risco = clienteHistoricoService.avaliarRisco(proposta.getCpf(), proposta.getValor());
+        if (log.isDebugEnabled()) {
+            String cpfMasked = proposta.getCpf() != null && proposta.getCpf().length() >= 3
+                    ? "***" + proposta.getCpf().substring(proposta.getCpf().length() - 3)
+                    : "(indefinido)";
+            log.debug("[CriarPropostaUseCase] Avaliação de risco concluída. cpf={}, valor={}, risco={}",
+                    cpfMasked, proposta.getValor(), risco);
+        }
 
         // 2) Define status inicial conforme risco
         String status;
@@ -72,6 +87,9 @@ public class CriarPropostaUseCase {
             default:
                 status = "PENDENTE"; // fluxo normal
         }
+        if (log.isInfoEnabled()) {
+            log.info("[CriarPropostaUseCase] Status inicial definido: {}", status);
+        }
 
         // 3) Recria a proposta com o status calculado (entidade imutável)
         Proposta propostaParaSalvar = new Proposta(
@@ -81,7 +99,16 @@ public class CriarPropostaUseCase {
                 status
         );
 
-        // 4) Persiste
-        return repository.salvar(propostaParaSalvar);
+        Proposta salva = repository.salvar(propostaParaSalvar);
+
+        // 5) Se for um fluxo que exige processamento assíncrono (ex: tudo que não foi rejeitado)
+        if (!"REJEITADA".equals(salva.getStatus())) {
+            if (log.isDebugEnabled()) {
+                log.debug("[CriarPropostaUseCase] Enfileirando proposta para processamento assíncrono. id={}", salva.getId());
+            }
+            propostaNotifier.notificarCriacao(salva);
+        }
+
+        return salva;
     }
 }

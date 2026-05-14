@@ -1,9 +1,10 @@
-package com.infrastructure.output.persistence.entity.repository;
+package com.modernbank.credit.infrastructure.output.persistence.entity.repository;
 
 import com.modernbank.credit.domain.model.Proposta;
 import com.modernbank.credit.domain.exception.PropostaNotFoundException;
 import com.modernbank.credit.domain.repository.PropostaRepository;
-import com.infrastructure.output.persistence.entity.PropostaEntity;
+import com.modernbank.credit.infrastructure.output.persistence.PropostaRepositoryAdapter;
+import com.modernbank.credit.infrastructure.output.persistence.entity.PropostaEntity;
 import lombok.RequiredArgsConstructor;
 // Removido @Repository para evitar bean duplicado; usar PropostaRepositoryAdapter como implementação
 
@@ -24,6 +25,13 @@ import java.util.UUID;
  * - Ativa tratamento automático de exceções JPA
  *
  */
+/**
+ * DEPRECATED: Implementação antiga do repositório de domínio baseada diretamente no JPA repository.
+ * Mantida apenas por histórico; não registrada como bean Spring.
+ * Prefira usar o adapter {@link PropostaRepositoryAdapter}
+ * junto com {@link SpringDataPropostaRepository}.
+ */
+@Deprecated
 @RequiredArgsConstructor
 public class PropostaRepositoryImpl implements PropostaRepository {
 

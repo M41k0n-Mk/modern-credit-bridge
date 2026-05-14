@@ -4,6 +4,7 @@ import com.modernbank.credit.domain.model.Proposta;
 import com.modernbank.credit.domain.repository.PropostaRepository;
 import com.modernbank.credit.domain.service.ClienteHistoricoService;
 import com.modernbank.credit.domain.service.RiscoCliente;
+import com.modernbank.credit.domain.sqs.PropostaNotifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,11 +40,14 @@ class CriarPropostaUseCaseTest {
     @Mock
     private ClienteHistoricoService clienteHistoricoService;
 
+    @Mock
+    private PropostaNotifier propostaNotifier;
+
     private CriarPropostaUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        this.useCase = new CriarPropostaUseCase(repositoryMock, clienteHistoricoService);
+        this.useCase = new CriarPropostaUseCase(repositoryMock, clienteHistoricoService, propostaNotifier);
     }
 
     @Test
@@ -89,7 +93,7 @@ class CriarPropostaUseCaseTest {
     void deveLancarExcecaoQuandoRepositorioNulo() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            new CriarPropostaUseCase(null, clienteHistoricoService);
+            new CriarPropostaUseCase(null, clienteHistoricoService, propostaNotifier);
         });
     }
 
@@ -97,7 +101,7 @@ class CriarPropostaUseCaseTest {
     @DisplayName("Deve lançar exceção quando ClienteHistoricoService é nulo")
     void deveLancarExcecaoQuandoClienteHistoricoServiceNulo() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new CriarPropostaUseCase(repositoryMock, null);
+            new CriarPropostaUseCase(repositoryMock, null, propostaNotifier);
         });
     }
 

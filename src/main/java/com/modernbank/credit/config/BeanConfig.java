@@ -1,8 +1,10 @@
-package com.config;
+package com.modernbank.credit.config;
 
 import com.modernbank.credit.domain.repository.PropostaRepository;
 import com.modernbank.credit.domain.usecase.CriarPropostaUseCase;
 import com.modernbank.credit.domain.service.ClienteHistoricoService;
+import com.modernbank.credit.domain.sqs.PropostaNotifier;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * Define os beans de injeção de dependência para use cases e outros componentes.
  */
 @Configuration
+@Slf4j
 public class BeanConfig {
 
     /**
@@ -22,7 +25,20 @@ public class BeanConfig {
      */
     @Bean
     public CriarPropostaUseCase criarPropostaUseCase(PropostaRepository repository,
-                                                    ClienteHistoricoService clienteHistoricoService) {
-        return new CriarPropostaUseCase(repository, clienteHistoricoService);
+                                                    ClienteHistoricoService clienteHistoricoService,
+                                                    PropostaNotifier propostaNotifier) {
+        if (log.isDebugEnabled()) {
+            log.debug("[BeanConfig] Criando bean CriarPropostaUseCase");
+        }
+        return new CriarPropostaUseCase(repository, clienteHistoricoService, propostaNotifier);
+    }
+
+    @Bean
+    public PropostaNotifier propostaNotifier() {
+        // No-op notifier para ambientes sem SQS configurado
+        if (log.isInfoEnabled()) {
+            log.info("[BeanConfig] Registrando PropostaNotifier no-op");
+        }
+        return proposta -> { };
     }
 }
