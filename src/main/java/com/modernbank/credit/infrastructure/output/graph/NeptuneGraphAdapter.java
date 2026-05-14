@@ -2,6 +2,7 @@ package com.modernbank.credit.infrastructure.output.graph;
 
 import org.apache.tinkerpop.gremlin.driver.Cluster;
 import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection;
+import org.apache.tinkerpop.gremlin.driver.ser.GraphBinaryMessageSerializerV1;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import static org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +23,7 @@ public class NeptuneGraphAdapter {
                 .addContactPoint(endpoint)
                 .port(8182)
                 .enableSsl(true)
-                .serializer("application/vnd.gremlin-v3.0+binary")
+                .serializer(new GraphBinaryMessageSerializerV1())
                 .create();
     }
 
