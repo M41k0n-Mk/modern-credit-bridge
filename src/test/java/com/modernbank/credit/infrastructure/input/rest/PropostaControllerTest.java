@@ -1,7 +1,7 @@
-package com.infrastructure.input.rest;
+package com.modernbank.credit.infrastructure.input.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.infrastructure.input.rest.dto.PropostaRequest;
+import com.modernbank.credit.infrastructure.input.rest.dto.PropostaRequest;
 import com.modernbank.credit.domain.model.Proposta;
 import com.modernbank.credit.domain.usecase.CriarPropostaUseCase;
 import org.junit.jupiter.api.BeforeEach;

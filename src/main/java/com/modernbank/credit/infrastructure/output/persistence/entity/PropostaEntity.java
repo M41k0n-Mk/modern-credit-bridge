@@ -1,4 +1,4 @@
-package com.infrastructure.output.persistence.entity;
+package com.modernbank.credit.infrastructure.output.persistence.entity;
 
 import com.modernbank.credit.domain.model.Proposta;
 import jakarta.persistence.Column;

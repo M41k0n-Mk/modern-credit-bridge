@@ -1,4 +1,4 @@
-package com.infrastructure.output.graph;
+package com.modernbank.credit.infrastructure.output.graph;
 
 import jakarta.annotation.PostConstruct;
 import org.apache.tinkerpop.gremlin.driver.Cluster;
@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 
 import static org.apache.tinkerpop.gremlin.process.traversal.AnonymousTraversalSource.traversal;
 
+@Slf4j
 @Component
 @Profile("dev")
 @ConditionalOnProperty(name = "neptune.enabled", havingValue = "true", matchIfMissing = false)
@@ -29,6 +31,7 @@ public class NeptuneDataSeeder {
 
     @PostConstruct // Executa assim que o Spring subir a aplicação
     public void popularCenariosDeTeste() {
+        log.info("[NeptuneDataSeeder] Popular cenários de teste em DEV.");
         GraphTraversalSource g = traversal().withRemote(DriverRemoteConnection.using(cluster));
 
         // Limpa o grafo (Atenção: Apenas para ambiente de DEV)
@@ -44,6 +47,6 @@ public class NeptuneDataSeeder {
         // Cria a ligação que fará a sua query de risco estourar
         g.addE("vinculado_a").from(novoCliente).to(fraudador).iterate();
 
-        System.out.println("====== DADOS DE TESTE NO NEPTUNE CRIADOS ======");
+        log.info("[NeptuneDataSeeder] Dados de teste no Neptune criados.");
     }
 }
