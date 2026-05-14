@@ -22,6 +22,7 @@ public class NeptuneGraphAdapter {
                 .addContactPoint(endpoint)
                 .port(8182)
                 .enableSsl(true)
+                .serializer("application/vnd.gremlin-v3.0+binary")
                 .create();
     }
 
