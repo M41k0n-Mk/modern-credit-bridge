@@ -32,13 +32,4 @@ public class BeanConfig {
         }
         return new CriarPropostaUseCase(repository, clienteHistoricoService, propostaNotifier);
     }
-
-    @Bean
-    public PropostaNotifier propostaNotifier() {
-        // No-op notifier para ambientes sem SQS configurado
-        if (log.isInfoEnabled()) {
-            log.info("[BeanConfig] Registrando PropostaNotifier no-op");
-        }
-        return proposta -> { };
-    }
 }
