@@ -1,5 +1,8 @@
 package com.modernbank.credit.domain.model;
 
+import com.modernbank.credit.context.propostas.domain.factory.PropostaFactory;
+import com.modernbank.credit.context.propostas.domain.model.Proposta;
+import com.modernbank.credit.context.propostas.domain.model.PropostaStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -22,13 +25,13 @@ class PropostaTest {
     @DisplayName("Deve criar proposta com construtor simples gerando UUID")
     void deveCriarPropostaComConstrutorSimples() {
         // Act
-        Proposta proposta = com.modernbank.credit.domain.factory.PropostaFactory.construir("12345678900", new BigDecimal("1000.00"));
+        Proposta proposta = PropostaFactory.construir("12345678900", new BigDecimal("1000.00"));
 
         // Assert
         assertNotNull(proposta.getId());
         assertEquals("12345678900", proposta.getCpf().getValor());
         assertEquals(new BigDecimal("1000.00"), proposta.getValor().getValor());
-        assertEquals(com.modernbank.credit.domain.model.PropostaStatus.PENDENTE, proposta.getStatus());
+        assertEquals(PropostaStatus.PENDENTE, proposta.getStatus());
     }
 
     @Test
@@ -44,7 +47,7 @@ class PropostaTest {
         assertEquals(id, proposta.getId());
         assertEquals("12345678900", proposta.getCpf().getValor());
         assertEquals(new BigDecimal("1000.00"), proposta.getValor().getValor());
-        assertEquals(com.modernbank.credit.domain.model.PropostaStatus.REJEITADA, proposta.getStatus());
+        assertEquals(PropostaStatus.REJEITADA, proposta.getStatus());
     }
 
     @Test
@@ -52,7 +55,7 @@ class PropostaTest {
     void deveLancarExcecaoQuandoCpfNulo() {
         // Act
         NullPointerException ex = assertThrows(NullPointerException.class, () -> {
-            com.modernbank.credit.domain.factory.PropostaFactory.construir(null, new BigDecimal("1000.00"));
+            PropostaFactory.construir(null, new BigDecimal("1000.00"));
         });
         // Assert
         assertEquals("CPF não pode ser nulo", ex.getMessage());
@@ -63,7 +66,7 @@ class PropostaTest {
     void deveLancarExcecaoQuandoCpfVazio() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            com.modernbank.credit.domain.factory.PropostaFactory.construir("", new BigDecimal("1000.00"));
+            PropostaFactory.construir("", new BigDecimal("1000.00"));
         });
     }
 
@@ -72,7 +75,7 @@ class PropostaTest {
     void deveLancarExcecaoQuandoCpfEmBranco() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            com.modernbank.credit.domain.factory.PropostaFactory.construir("   ", new BigDecimal("1000.00"));
+            PropostaFactory.construir("   ", new BigDecimal("1000.00"));
         });
     }
 
@@ -81,7 +84,7 @@ class PropostaTest {
     void deveLancarExcecaoQuandoValorNulo() {
         // Act
         NullPointerException ex = assertThrows(NullPointerException.class, () -> {
-            com.modernbank.credit.domain.factory.PropostaFactory.construir("12345678900", null);
+            PropostaFactory.construir("12345678900", null);
         });
         // Assert
         assertEquals("Valor não pode ser nulo", ex.getMessage());
@@ -92,7 +95,7 @@ class PropostaTest {
     void deveLancarExcecaoQuandoValorZero() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            com.modernbank.credit.domain.factory.PropostaFactory.construir("12345678900", new BigDecimal("0"));
+            PropostaFactory.construir("12345678900", new BigDecimal("0"));
         });
     }
 
@@ -101,7 +104,7 @@ class PropostaTest {
     void deveLancarExcecaoQuandoValorNegativo() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            com.modernbank.credit.domain.factory.PropostaFactory.construir("12345678900", new BigDecimal("-100.00"));
+            PropostaFactory.construir("12345678900", new BigDecimal("-100.00"));
         });
     }
 
@@ -109,8 +112,8 @@ class PropostaTest {
     @DisplayName("Deve ter ID diferente para duas propostas distintas")
     void deveGerarIdsDiferentesParaPropostasDiferentes() {
         // Act
-        Proposta proposta1 = com.modernbank.credit.domain.factory.PropostaFactory.construir("12345678900", new BigDecimal("1000.00"));
-        Proposta proposta2 = com.modernbank.credit.domain.factory.PropostaFactory.construir("98765432100", new BigDecimal("2000.00"));
+        Proposta proposta1 = PropostaFactory.construir("12345678900", new BigDecimal("1000.00"));
+        Proposta proposta2 = PropostaFactory.construir("98765432100", new BigDecimal("2000.00"));
 
         // Assert
         assertNotEquals(proposta1.getId(), proposta2.getId());
@@ -132,7 +135,7 @@ class PropostaTest {
     @DisplayName("Deve retornar false quando comparado com null")
     void deveRetornarFalseQuandoComparadoComNull() {
         // Arrange
-        Proposta proposta = com.modernbank.credit.domain.factory.PropostaFactory.construir("12345678900", new BigDecimal("1000.00"));
+        Proposta proposta = PropostaFactory.construir("12345678900", new BigDecimal("1000.00"));
 
         // Act & Assert
         assertNotEquals(proposta, null);
@@ -154,7 +157,7 @@ class PropostaTest {
     @DisplayName("Deve gerar toString com informações relevantes")
     void deveGerarToStringComInformacoesRelevantes() {
         // Arrange
-        Proposta proposta = com.modernbank.credit.domain.factory.PropostaFactory.construir("12345678900", new BigDecimal("1000.00"));
+        Proposta proposta = PropostaFactory.construir("12345678900", new BigDecimal("1000.00"));
 
         // Act
         String toString = proposta.toString();
@@ -169,13 +172,13 @@ class PropostaTest {
     @DisplayName("Deve ser imutável após criação")
     void deveSerImutavelAposCriacao() {
         // Arrange
-        Proposta proposta = com.modernbank.credit.domain.factory.PropostaFactory.construir("12345678900", new BigDecimal("1000.00"));
+        Proposta proposta = PropostaFactory.construir("12345678900", new BigDecimal("1000.00"));
 
         // Assert - Getters retornam valores corretos
         assertNotNull(proposta.getId());
         assertEquals("12345678900", proposta.getCpf().getValor());
         assertEquals(new BigDecimal("1000.00"), proposta.getValor().getValor());
-        assertEquals(com.modernbank.credit.domain.model.PropostaStatus.PENDENTE, proposta.getStatus());
+        assertEquals(PropostaStatus.PENDENTE, proposta.getStatus());
 
         // Não há setters públicos, então a proposta é imutável
     }

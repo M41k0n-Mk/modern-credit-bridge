@@ -1,9 +1,9 @@
 package com.modernbank.credit.config;
 
-import com.modernbank.credit.domain.repository.PropostaRepository;
-import com.modernbank.credit.domain.usecase.CriarPropostaUseCase;
-import com.modernbank.credit.domain.service.ClienteHistoricoService;
-import com.modernbank.credit.domain.sqs.PropostaNotifier;
+import com.modernbank.credit.context.propostas.domain.repository.PropostaRepository;
+import com.modernbank.credit.context.propostas.domain.usecase.CriarPropostaUseCase;
+import com.modernbank.credit.context.clientes.domain.service.ClienteHistoricoService;
+import com.modernbank.credit.context.propostas.domain.sqs.PropostaNotifier;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

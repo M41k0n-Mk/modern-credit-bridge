@@ -1,11 +1,13 @@
 package com.modernbank.credit.domain.usecase;
 
-import com.modernbank.credit.domain.model.Proposta;
-import com.modernbank.credit.domain.factory.PropostaFactory;
-import com.modernbank.credit.domain.repository.PropostaRepository;
-import com.modernbank.credit.domain.service.ClienteHistoricoService;
-import com.modernbank.credit.domain.service.RiscoCliente;
-import com.modernbank.credit.domain.sqs.PropostaNotifier;
+import com.modernbank.credit.context.propostas.domain.model.Proposta;
+import com.modernbank.credit.context.propostas.domain.factory.PropostaFactory;
+import com.modernbank.credit.context.propostas.domain.model.PropostaStatus;
+import com.modernbank.credit.context.propostas.domain.repository.PropostaRepository;
+import com.modernbank.credit.context.clientes.domain.service.ClienteHistoricoService;
+import com.modernbank.credit.context.clientes.domain.service.RiscoCliente;
+import com.modernbank.credit.context.propostas.domain.sqs.PropostaNotifier;
+import com.modernbank.credit.context.propostas.domain.usecase.CriarPropostaUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,7 +76,7 @@ class CriarPropostaUseCaseTest {
         assertEquals(idGerado, resultado.getId());
         assertEquals(cpf, resultado.getCpf().getValor());
         assertEquals(valor, resultado.getValor().getValor());
-        assertEquals(com.modernbank.credit.domain.model.PropostaStatus.PENDENTE, resultado.getStatus());
+        assertEquals(PropostaStatus.PENDENTE, resultado.getStatus());
 
         // Verifica se o repositório foi chamado com uma proposta
         verify(repositoryMock).salvar(any(Proposta.class));

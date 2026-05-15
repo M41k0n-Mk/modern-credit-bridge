@@ -1,8 +1,8 @@
 package com.modernbank.credit.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.modernbank.credit.domain.sqs.PropostaNotifier;
-import com.modernbank.credit.infrastructure.output.messaging.SqsPropostaAdapter;
+import com.modernbank.credit.context.propostas.domain.sqs.PropostaNotifier;
+import com.modernbank.credit.context.propostas.infrastructure.output.messaging.SqsPropostaAdapter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
