@@ -3,6 +3,7 @@ package com.modernbank.credit.infrastructure.input.rest.mapper;
 import com.modernbank.credit.infrastructure.input.rest.dto.PropostaRequest;
 import com.modernbank.credit.infrastructure.input.rest.dto.PropostaResponse;
 import com.modernbank.credit.domain.model.Proposta;
+import com.modernbank.credit.domain.factory.PropostaFactory;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -31,8 +32,10 @@ public interface PropostaMapperInterface {
      * @return entidade Proposta do domínio
      */
     default Proposta toDomain(PropostaRequest request) {
-        if (request == null) return null;
-        return new Proposta(request.getCpf(), request.getValor());
+        if (request == null) {
+            throw new NullPointerException("PropostaRequest não pode ser nula");
+        }
+        return PropostaFactory.construir(request.getCpf(), request.getValor());
     }
 
     /**
@@ -42,7 +45,9 @@ public interface PropostaMapperInterface {
      * @return DTO com os dados para retorno da API
      */
     default PropostaResponse toResponse(Proposta proposta) {
-        if (proposta == null) return null;
-        return new PropostaResponse(proposta.getId(), proposta.getStatus());
+        if (proposta == null) {
+            throw new NullPointerException("Proposta não pode ser nula");
+        }
+        return new PropostaResponse(proposta.getId(), proposta.getStatus().name());
     }
 }

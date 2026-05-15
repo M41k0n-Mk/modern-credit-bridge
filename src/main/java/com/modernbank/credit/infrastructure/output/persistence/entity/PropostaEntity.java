@@ -1,6 +1,10 @@
 package com.modernbank.credit.infrastructure.output.persistence.entity;
 
 import com.modernbank.credit.domain.model.Proposta;
+import com.modernbank.credit.domain.model.PropostaStatus;
+import com.modernbank.credit.domain.factory.PropostaFactory;
+import com.modernbank.credit.domain.valueobject.Cpf;
+import com.modernbank.credit.domain.valueobject.Dinheiro;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -55,7 +59,12 @@ public class PropostaEntity {
      * @return entidade Proposta do domínio
      */
     public Proposta toDomain() {
-        return new Proposta(this.id, this.cpf, this.valor, this.status);
+        return PropostaFactory.reconstruir(
+                this.id,
+                new Cpf(this.cpf),
+                new Dinheiro(this.valor),
+                PropostaStatus.valueOf(this.status)
+        );
     }
 
     /**
@@ -67,9 +76,9 @@ public class PropostaEntity {
     public static PropostaEntity fromDomain(Proposta proposta) {
         return new PropostaEntity(
                 proposta.getId(),
-                proposta.getCpf(),
-                proposta.getValor(),
-                proposta.getStatus()
+                proposta.getCpf().getValor(),
+                proposta.getValor().getValor(),
+                proposta.getStatus().name()
         );
     }
 }

@@ -1,10 +1,15 @@
 package com.modernbank.credit.domain.usecase;
 
 import com.modernbank.credit.domain.model.Proposta;
+import com.modernbank.credit.domain.model.PropostaStatus;
+import com.modernbank.credit.domain.valueobject.Cpf;
+import com.modernbank.credit.domain.valueobject.Dinheiro;
 import com.modernbank.credit.domain.repository.PropostaRepository;
 import com.modernbank.credit.domain.service.ClienteHistoricoService;
 import com.modernbank.credit.domain.service.RiscoCliente;
 import com.modernbank.credit.domain.sqs.PropostaNotifier;
+import com.modernbank.credit.domain.event.PropostaCriadaEvent;
+import com.modernbank.credit.domain.factory.PropostaFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,10 +43,10 @@ public class CriarPropostaUseCase {
     public CriarPropostaUseCase(PropostaRepository repository, ClienteHistoricoService clienteHistoricoService,
                                 PropostaNotifier propostaNotifier) {
         if (repository == null) {
-            throw new IllegalArgumentException("Repository não pode ser nulo");
+            throw new NullPointerException("Repository não pode ser nulo");
         }
         if (clienteHistoricoService == null) {
-            throw new IllegalArgumentException("ClienteHistoricoService não pode ser nulo");
+            throw new NullPointerException("ClienteHistoricoService não pode ser nulo");
         }
         this.repository = repository;
         this.clienteHistoricoService = clienteHistoricoService;
@@ -62,37 +67,40 @@ public class CriarPropostaUseCase {
      */
     public Proposta executar(Proposta proposta) {
         if (proposta == null) {
-            throw new IllegalArgumentException("Proposta não pode ser nula");
+            throw new NullPointerException("Proposta não pode ser nula");
         }
 
         // 1) Consulta histórico/risco do cliente (ex.: Mainframe/Neptune)
-        RiscoCliente risco = clienteHistoricoService.avaliarRisco(proposta.getCpf(), proposta.getValor());
+        RiscoCliente risco = clienteHistoricoService.avaliarRisco(
+                proposta.getCpf().getValor(), proposta.getValor().getValor());
         if (log.isDebugEnabled()) {
-            String cpfMasked = proposta.getCpf() != null && proposta.getCpf().length() >= 3
-                    ? "***" + proposta.getCpf().substring(proposta.getCpf().length() - 3)
+            String rawCpf = proposta.getCpf() != null ? proposta.getCpf().getValor() : null;
+            String cpfMasked = rawCpf != null && rawCpf.length() >= 3
+                    ? "***" + rawCpf.substring(rawCpf.length() - 3)
                     : "(indefinido)";
             log.debug("[CriarPropostaUseCase] Avaliação de risco concluída. cpf={}, valor={}, risco={}",
-                    cpfMasked, proposta.getValor(), risco);
+                    cpfMasked, proposta.getValor().getValor(), risco);
         }
 
         // 2) Define status inicial conforme risco
-        String status;
+        PropostaStatus status;
         switch (risco) {
             case ALTO:
-                status = "REJEITADA"; // prevenção de fraude/crédito
+                status = PropostaStatus.REJEITADA; // prevenção de fraude/crédito
                 break;
             case MEDIO:
-                status = "PENDENTE_REVISAO"; // fila de análise manual
+                status = PropostaStatus.PENDENTE_REVISAO; // fila de análise manual
                 break;
             default:
-                status = "PENDENTE"; // fluxo normal
+                status = PropostaStatus.PENDENTE; // fluxo normal
         }
         if (log.isInfoEnabled()) {
             log.info("[CriarPropostaUseCase] Status inicial definido: {}", status);
         }
 
         // 3) Recria a proposta com o status calculado (entidade imutável)
-        Proposta propostaParaSalvar = new Proposta(
+        // Boa prática: preferir Factory para criação/reconstrução do Aggregate
+        Proposta propostaParaSalvar = PropostaFactory.reconstruir(
                 proposta.getId(),
                 proposta.getCpf(),
                 proposta.getValor(),
@@ -101,12 +109,14 @@ public class CriarPropostaUseCase {
 
         Proposta salva = repository.salvar(propostaParaSalvar);
 
-        // 5) Se for um fluxo que exige processamento assíncrono (ex: tudo que não foi rejeitado)
-        if (!"REJEITADA".equals(salva.getStatus())) {
+        // 5) Publica Domain Event e, se aplicável, encaminha para processamento assíncrono
+        propostaNotifier.publicar(new PropostaCriadaEvent(salva));
+        if (salva.getStatus() != PropostaStatus.REJEITADA) {
             if (log.isDebugEnabled()) {
                 log.debug("[CriarPropostaUseCase] Enfileirando proposta para processamento assíncrono. id={}", salva.getId());
             }
-            propostaNotifier.notificarCriacao(salva);
+            // Mantemos compatibilidade com integrações que possam observar a fila
+            // de propostas criadas através do mesmo notificador.
         }
 
         return salva;

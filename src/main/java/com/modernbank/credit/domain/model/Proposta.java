@@ -1,6 +1,8 @@
 package com.modernbank.credit.domain.model;
 
-import java.math.BigDecimal;
+import com.modernbank.credit.domain.valueobject.Cpf;
+import com.modernbank.credit.domain.valueobject.Dinheiro;
+
 import java.util.Objects;
 import java.util.UUID;
 
@@ -9,22 +11,30 @@ import java.util.UUID;
  * Encapsula regras de negócio e validações específicas.
  */
 public class Proposta {
+    // Aggregate Root: Proposta
     private final UUID id;
-    private final String cpf;
-    private final BigDecimal valor;
-    private final String status;
+    private final Cpf cpf;
+    private final Dinheiro valor;
+    private final PropostaStatus status;
 
     /**
      * Construtor privado para garantir validação via factory method ou construtor público com validação.
      */
-    public Proposta(String cpf, BigDecimal valor) {
-        this(UUID.randomUUID(), cpf, valor, "PENDENTE");
+    @Deprecated
+    public Proposta(String cpf, java.math.BigDecimal valor) {
+        this(new Cpf(cpf), new Dinheiro(valor));
+    }
+
+    @Deprecated
+    public Proposta(Cpf cpf, Dinheiro valor) {
+        this(UUID.randomUUID(), cpf, valor, PropostaStatus.PENDENTE);
     }
 
     /**
      * Construtor completo para reconstrução de estado persistido.
      */
-    public Proposta(UUID id, String cpf, BigDecimal valor, String status) {
+    @Deprecated
+    public Proposta(UUID id, Cpf cpf, Dinheiro valor, PropostaStatus status) {
         this.id = Objects.requireNonNull(id, "ID não pode ser nulo");
         this.cpf = Objects.requireNonNull(cpf, "CPF não pode ser nulo");
         this.valor = Objects.requireNonNull(valor, "Valor não pode ser nulo");
@@ -34,15 +44,27 @@ public class Proposta {
     }
 
     /**
+     * Construtor de compatibilidade para testes e camadas antigas.
+     * Evita quebra ao migrar para VOs e enum.
+     */
+    @Deprecated
+    public Proposta(UUID id, String cpf, java.math.BigDecimal valor, String status) {
+        this(id, new Cpf(cpf), new Dinheiro(valor), PropostaStatus.valueOf(status));
+    }
+
+    /**
+     * Construtor de compatibilidade (UUID, Cpf, Dinheiro, String status) usado em testes legados.
+     */
+    @Deprecated
+    public Proposta(UUID id, Cpf cpf, Dinheiro valor, String status) {
+        this(id, cpf, valor, PropostaStatus.valueOf(status));
+    }
+
+    /**
      * Validações de regra de negócio do domínio.
      */
     private void validar() {
-        if (cpf.isBlank()) {
-            throw new IllegalArgumentException("CPF não pode ser vazio");
-        }
-        if (valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Valor deve ser maior que zero");
-        }
+        // Invariantes cobertas pelos VOs (Cpf e Dinheiro)
     }
 
     // Getters imutáveis
@@ -50,15 +72,15 @@ public class Proposta {
         return id;
     }
 
-    public String getCpf() {
+    public Cpf getCpf() {
         return cpf;
     }
 
-    public BigDecimal getValor() {
+    public Dinheiro getValor() {
         return valor;
     }
 
-    public String getStatus() {
+    public PropostaStatus getStatus() {
         return status;
     }
 
@@ -79,9 +101,9 @@ public class Proposta {
     public String toString() {
         return "Proposta{" +
                 "id=" + id +
-                ", cpf='" + cpf + '\'' +
+                ", cpf=" + cpf +
                 ", valor=" + valor +
-                ", status='" + status + '\'' +
+                ", status=" + status +
                 '}';
     }
 }

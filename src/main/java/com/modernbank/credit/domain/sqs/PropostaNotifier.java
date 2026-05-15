@@ -1,8 +1,10 @@
 package com.modernbank.credit.domain.sqs;
 
-import com.modernbank.credit.domain.model.Proposta;
+import com.modernbank.credit.domain.event.DomainEvent;
 
+/**
+ * Porta de saída do domínio para publicação de eventos em mensageria.
+ */
 public interface PropostaNotifier {
-
-    void notificarCriacao(Proposta proposta);
+    void publicar(DomainEvent event);
 }
