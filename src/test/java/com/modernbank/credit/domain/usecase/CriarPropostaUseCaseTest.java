@@ -1,6 +1,7 @@
 package com.modernbank.credit.domain.usecase;
 
 import com.modernbank.credit.domain.model.Proposta;
+import com.modernbank.credit.domain.factory.PropostaFactory;
 import com.modernbank.credit.domain.repository.PropostaRepository;
 import com.modernbank.credit.domain.service.ClienteHistoricoService;
 import com.modernbank.credit.domain.service.RiscoCliente;
@@ -58,7 +59,7 @@ class CriarPropostaUseCaseTest {
         BigDecimal valor = new BigDecimal("1000.00");
         UUID idGerado = UUID.randomUUID();
 
-        Proposta propostaEntrada = new Proposta(cpf, valor);
+        Proposta propostaEntrada = PropostaFactory.construir(cpf, valor);
         Proposta propostaSalva = new Proposta(idGerado, cpf, valor, "PENDENTE");
 
         when(clienteHistoricoService.avaliarRisco(any(), any())).thenReturn(RiscoCliente.BAIXO);
@@ -71,9 +72,9 @@ class CriarPropostaUseCaseTest {
         // Assert
         assertNotNull(resultado);
         assertEquals(idGerado, resultado.getId());
-        assertEquals(cpf, resultado.getCpf());
-        assertEquals(valor, resultado.getValor());
-        assertEquals("PENDENTE", resultado.getStatus());
+        assertEquals(cpf, resultado.getCpf().getValor());
+        assertEquals(valor, resultado.getValor().getValor());
+        assertEquals(com.modernbank.credit.domain.model.PropostaStatus.PENDENTE, resultado.getStatus());
 
         // Verifica se o repositório foi chamado com uma proposta
         verify(repositoryMock).salvar(any(Proposta.class));
@@ -83,7 +84,7 @@ class CriarPropostaUseCaseTest {
     @DisplayName("Deve lançar exceção quando proposta é nula")
     void deveLancarExcecaoQuandoPropostaNula() {
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(NullPointerException.class, () -> {
             useCase.executar(null);
         });
     }
@@ -92,7 +93,7 @@ class CriarPropostaUseCaseTest {
     @DisplayName("Deve lançar exceção quando repositório é nulo")
     void deveLancarExcecaoQuandoRepositorioNulo() {
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(NullPointerException.class, () -> {
             new CriarPropostaUseCase(null, clienteHistoricoService, propostaNotifier);
         });
     }
@@ -100,7 +101,7 @@ class CriarPropostaUseCaseTest {
     @Test
     @DisplayName("Deve lançar exceção quando ClienteHistoricoService é nulo")
     void deveLancarExcecaoQuandoClienteHistoricoServiceNulo() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(NullPointerException.class, () -> {
             new CriarPropostaUseCase(repositoryMock, null, propostaNotifier);
         });
     }
@@ -110,7 +111,7 @@ class CriarPropostaUseCaseTest {
     void deveValidarCpfNaProposta() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            new Proposta("", new BigDecimal("1000.00"));
+            PropostaFactory.construir("", new BigDecimal("1000.00"));
         });
     }
 
@@ -119,7 +120,7 @@ class CriarPropostaUseCaseTest {
     void deveValidarValorNaProposta() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            new Proposta("12345678900", new BigDecimal("0.00"));
+            PropostaFactory.construir("12345678900", new BigDecimal("0.00"));
         });
     }
 
@@ -127,7 +128,7 @@ class CriarPropostaUseCaseTest {
     @DisplayName("Deve chamar o repositório exatamente uma vez")
     void deveCharmarRepositorioUmaVez() {
         // Arrange
-        Proposta proposta = new Proposta("12345678900", new BigDecimal("1000.00"));
+        Proposta proposta = PropostaFactory.construir("12345678900", new BigDecimal("1000.00"));
         Proposta propostaSalva = new Proposta(UUID.randomUUID(), proposta.getCpf(), proposta.getValor(), "PENDENTE");
 
         when(clienteHistoricoService.avaliarRisco(any(), any())).thenReturn(RiscoCliente.BAIXO);

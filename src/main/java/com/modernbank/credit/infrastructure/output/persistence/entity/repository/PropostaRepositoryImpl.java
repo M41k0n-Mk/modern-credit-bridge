@@ -43,12 +43,12 @@ public class PropostaRepositoryImpl implements PropostaRepository {
      *
      * @param proposta proposta a ser salva (não nula)
      * @return proposta salva no banco de dados
-     * @throws IllegalArgumentException se proposta for nula
+     * @throws NullPointerException se proposta for nula
      */
     @Override
     public Proposta salvar(Proposta proposta) {
         if (proposta == null) {
-            throw new IllegalArgumentException("Proposta não pode ser nula");
+            throw new NullPointerException("Proposta não pode ser nula");
         }
         
         PropostaEntity entity = PropostaEntity.fromDomain(proposta);
@@ -63,12 +63,12 @@ public class PropostaRepositoryImpl implements PropostaRepository {
      *
      * @param id identificador único da proposta (não nulo)
      * @return Optional contendo a proposta se encontrada
-     * @throws IllegalArgumentException se id for nulo
+     * @throws NullPointerException se id for nulo
      */
     @Override
     public Optional<Proposta> buscarPorId(UUID id) {
         if (id == null) {
-            throw new IllegalArgumentException("ID não pode ser nulo");
+            throw new NullPointerException("ID não pode ser nulo");
         }
         
         return jpaRepository.findById(id)

@@ -3,6 +3,7 @@ package com.modernbank.credit.infrastructure.input.rest.mapper;
 import com.modernbank.credit.infrastructure.input.rest.dto.PropostaRequest;
 import com.modernbank.credit.infrastructure.input.rest.dto.PropostaResponse;
 import com.modernbank.credit.domain.model.Proposta;
+import com.modernbank.credit.domain.factory.PropostaFactory;
 
 
 /**
@@ -26,9 +27,9 @@ public class PropostaMapper {
      */
     public static Proposta toDomain(PropostaRequest request) {
         if (request == null) {
-            throw new IllegalArgumentException("PropostaRequest não pode ser nula");
+            throw new NullPointerException("PropostaRequest não pode ser nula");
         }
-        return new Proposta(request.getCpf(), request.getValor());
+        return PropostaFactory.construir(request.getCpf(), request.getValor());
     }
 
     /**
@@ -39,9 +40,9 @@ public class PropostaMapper {
      */
     public static PropostaResponse toResponse(Proposta proposta) {
         if (proposta == null) {
-            throw new IllegalArgumentException("Proposta não pode ser nula");
+            throw new NullPointerException("Proposta não pode ser nula");
         }
-        return new PropostaResponse(proposta.getId(), proposta.getStatus());
+        return new PropostaResponse(proposta.getId(), proposta.getStatus().name());
     }
 
     /**

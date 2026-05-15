@@ -24,7 +24,7 @@ public class PropostaRepositoryAdapter implements PropostaRepository {
     public Proposta salvar(Proposta proposta) {
         if (log.isDebugEnabled()) {
             log.debug("[PropostaRepositoryAdapter] Salvando proposta. cpf=***{} valor={} status={}",
-                    mask(proposta.getCpf()), proposta.getValor(), proposta.getStatus());
+                    mask(proposta.getCpf().getValor()), proposta.getValor().getValor(), proposta.getStatus().name());
         }
         // Converte domínio -> entidade JPA
         PropostaEntity entity = PropostaEntity.fromDomain(proposta);
