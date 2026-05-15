@@ -124,3 +124,47 @@ mvn test
 **v1.0.0** - Status: ✅ Production Ready
 
 Última atualização: 12 de Maio de 2026
+
+---
+
+## 🗺️ Context Map & Integração com Mainframe (Visão Estratégica DDD)
+
+Neste projeto demonstramos não só padrões táticos (VOs, Agregados, Repositórios) mas
+também padrões estratégicos do DDD: Bounded Contexts, Context Map e Anti-Corruption Layer.
+
+1) Bounded Contexts (exemplos no código):
+- `propostas` (core domain) — responsável pelo fluxo de crédito (entidade Proposta, regras, casos de uso).
+- `clientes` (supporting) — consulta histórico do cliente, análise de risco (Neptune/graph).
+- `legado` (generic/integration) — adaptação do mainframe via ACL.
+
+2) Context Map (resumo):
+- `propostas` (Cliente) <--(Customer-Supplier)-- `clientes` (Fornecedor de histórico)
+- `propostas` <--(ACL)-- `legado` (Mainframe): usamos uma Anti-Corruption Layer para traduzir os
+  arquivos/formatos do mainframe para o modelo limpo do domínio.
+
+3) Fluxo técnico (exemplo implementado):
+- A API recebe uma requisição para criar uma proposta.
+- Antes de postar para o mainframe, consultamos o serviço de histórico (Neptune) — evitamos
+  consultas caras repetidas.
+- Se tudo OK, publicamos uma mensagem em SQS (ou tópico semelhante).
+- Uma função Lambda consome a fila, gera um arquivo no formato do mainframe.
+- AWS Glue (ETL) transforma/refina o arquivo quando necessário (por exemplo, texto fixo ou COBOL copybook).
+- O mainframe consome o arquivo a partir de um bucket S3 (ou via integração já definida).
+- Após processamento, o mainframe gera um arquivo de retorno e escreve no S3.
+- Um processo (Lambda / Glue / Job) publica o retorno que a nossa aplicação consome, re-hidrata
+  e persiste no banco local para evitar consultas futuras redundantes ao mainframe.
+
+4) Por que usar ACL aqui?
+- Mainframe e formatos legados costumam ter convenções bizarras (posições fixas, códigos legados).
+- A ACL atua como uma barreira: ela lê o arquivo legado e produz objetos do nosso domínio com
+  a Linguagem Ubíqua (ex.: `Proposta`, `Cpf`, `Dinheiro`). Isso preserva a integridade do domínio.
+
+---
+
+## 📌 Observações sobre organização de código (estratégia)
+- Cada Bounded Context deve preferencialmente viver em um módulo/package próprio.
+- Dentro de cada contexto:
+  - `domain` (modelos, VOs)
+  - `usecase` (application services)
+  - `infrastructure` (adapters para DB, filas, APIs externas)
+  - `api` (controllers/DTOs)
