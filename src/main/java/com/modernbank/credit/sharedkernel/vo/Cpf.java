@@ -1,6 +1,6 @@
 package com.modernbank.credit.sharedkernel.vo;
 
-/** Value Object que representa um CPF não formatado (11 dígitos). */
+/** Value Object que representa um CPF não formatado (11 dígitos) */
 public record Cpf(String valor) {
   public Cpf {
     if (valor == null) {
