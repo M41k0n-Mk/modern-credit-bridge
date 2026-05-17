@@ -16,9 +16,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
+
+      - name: Run Checkstyle
+        run: mvn checkstyle:check
+
       - name: Build & Test
         run: mvn -B -q verify
-      # Opcional: validar Docker build sem publicar
+
       - name: Docker build (no push)
         run: |
           docker build -t test-image:pr .
