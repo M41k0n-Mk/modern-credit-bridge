@@ -35,6 +35,11 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
+      - name: Debug OIDC Token Subject
+        run: |
+            echo "O ARN da minha Role no Secret e: ${{ secrets.AWS_ROLE_ARN }}"
+            echo "Repositorio atual: ${{ github.repository }}"
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
