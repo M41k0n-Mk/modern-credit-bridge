@@ -12,21 +12,19 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 @Configuration
 public class SqsConfig {
 
-    @Value("${cloud.aws.region.static:us-east-1}")
-    private String region;
+  @Value("${cloud.aws.region.static:us-east-1}")
+  private String region;
 
-    @Bean
-    public SqsClient sqsClient() {
-        return SqsClient.builder()
-                .region(Region.of(region))
-                .build();
-    }
+  @Bean
+  public SqsClient sqsClient() {
+    return SqsClient.builder().region(Region.of(region)).build();
+  }
 
-    @Bean
-    public PropostaNotifier propostaNotifier(
-            SqsClient sqsClient,
-            ObjectMapper objectMapper,
-            @Value("${cloud.aws.sqs.queue-url}") String queueUrl) {
-        return new SqsPropostaAdapter(sqsClient, queueUrl, objectMapper);
-    }
+  @Bean
+  public PropostaNotifier propostaNotifier(
+      SqsClient sqsClient,
+      ObjectMapper objectMapper,
+      @Value("${cloud.aws.sqs.queue-url}") String queueUrl) {
+    return new SqsPropostaAdapter(sqsClient, queueUrl, objectMapper);
+  }
 }
